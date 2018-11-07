@@ -79,24 +79,12 @@ namespace EcoFarm_db
 
         private void LinkButton_Click(object sender, EventArgs e)
         {
-            if (linked == false)
-            {
-                row = invoiceDataGridView.SelectedRows[0];
-                invoice_productsDataGridView.DataSource = ((DataRowView)invoiceDataGridView.SelectedRows[0].DataBoundItem).Row.GetChildRows("Invoice_Invoice products").CopyToDataTable();
-                linked = true;
-            }
+            if (linked)
+                linked = false;
             else
             {
-                if (invoiceDataGridView.SelectedRows[0] != row)
-                {
-                    invoice_productsDataGridView.DataSource = ((DataRowView)invoiceDataGridView.SelectedRows[0].DataBoundItem).Row.GetChildRows("Invoice_Invoice products").CopyToDataTable();
-                    row = invoiceDataGridView.SelectedRows[0];
-                }
-                else
-                {
-                    invoice_productsDataGridView.DataSource = invoice_productsBindingSource;
-                    linked = false;
-                }
+                linked = true;
+                invoice_productsDataGridView.DataSource = invoice_productsBindingSource;
             }
         }
 
@@ -129,37 +117,21 @@ namespace EcoFarm_db
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             invoice_productsBindingSource.MoveFirst();
-            //invoice_productsDataGridView.ClearSelection();
-            //invoice_productsDataGridView.CurrentCell = invoice_productsDataGridView.Rows[0].Cells[0];
         }
 
         private void PrevBtn_Click(object sender, EventArgs e)
         {
             invoice_productsBindingSource.MovePrevious();
-            //int prev = invoice_productsDataGridView.CurrentRow.Index - 1;
-            //if (prev >= 0)
-            //    invoice_productsDataGridView.CurrentCell = invoice_productsDataGridView.Rows[prev].Cells[invoice_productsDataGridView.CurrentCell.ColumnIndex];
         }
 
         private void NextBtn_Click(object sender, EventArgs e)
         {
             invoice_productsBindingSource.MoveNext();
-            //int next = invoice_productsDataGridView.CurrentRow.Index + 1;
-            //if (next < invoice_productsDataGridView.RowCount)
-            //    invoice_productsDataGridView.CurrentCell = invoice_productsDataGridView.Rows[next].Cells[invoice_productsDataGridView.CurrentCell.ColumnIndex];
         }
 
         private void LastBtn_Click(object sender, EventArgs e)
         {
             invoice_productsBindingSource.MoveLast();
-            //int last = invoice_productsDataGridView.Rows.Count-2;
-            //invoice_productsDataGridView.CurrentCell = invoice_productsDataGridView.Rows[last].Cells[0];
-        }
-
-        private void AddBtn_Click(object sender, EventArgs e)
-        {
-            invoice_productsDataGridView.Rows.Add();
-
         }
 
         private void FindByPKBtn_Click(object sender, EventArgs e)
@@ -210,12 +182,16 @@ namespace EcoFarm_db
 
         private void invoiceDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            //InvNumberTxt.Text = invoiceDataGridView.SelectedRows[0].Cells[0].Value.ToString();
             DateTxt.Text = invoiceDataGridView.SelectedRows[0].Cells[1].Value.ToString();
             SupplierCodeTxt.Text = invoiceDataGridView.SelectedRows[0].Cells[2].Value.ToString();
             InvoiceTypeTxt.Text = invoiceDataGridView.SelectedRows[0].Cells[3].Value.ToString();
             SupplierTxt.Text = invoiceDataGridView.SelectedRows[0].Cells[4].Value.ToString();
             RecieverTxt.Text = invoiceDataGridView.SelectedRows[0].Cells[5].Value.ToString();
+
+            if (linked)
+                if (((DataRowView)invoiceDataGridView.SelectedRows[0].DataBoundItem).Row.GetChildRows("Invoice_Invoice products").Length > 0)
+                    invoice_productsDataGridView.DataSource = ((DataRowView)invoiceDataGridView.SelectedRows[0].DataBoundItem).Row.GetChildRows("Invoice_Invoice products").CopyToDataTable();
+                else invoice_productsDataGridView.DataSource = string.Empty;
         }
 
         private void SaveBtn_Click(object sender, EventArgs e)
@@ -231,10 +207,6 @@ namespace EcoFarm_db
                 this.Validate();
                 this.invoiceBindingSource.EndEdit();
                 this.tableAdapterManager.UpdateAll(this.ecoFarm_DBDataSet);
-
-                //invoiceTableAdapter.Update(ecoFarm_DBDataSet.Invoice);
-                //tableAdapterManager.UpdateAll(ecoFarm_DBDataSet);
-                //ecoFarm_DBDataSet.AcceptChanges();
             }
             catch
             {
@@ -249,7 +221,6 @@ namespace EcoFarm_db
 
         private void invoice_productsDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            //ProdCodeTxt.Text = invoice_productsDataGridView.SelectedRows[0].Cells[0].Value.ToString();
             NameTxt.Text = invoice_productsDataGridView.SelectedRows[0].Cells[1].Value.ToString();
             UnitsTxt.Text = invoice_productsDataGridView.SelectedRows[0].Cells[2].Value.ToString();
             NumUnitsTxt.Text = invoice_productsDataGridView.SelectedRows[0].Cells[3].Value.ToString();
